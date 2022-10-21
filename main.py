@@ -184,7 +184,7 @@ async def on_member_join(member):
         message = f"Welcome {member.mention} to {guild.name}, hopefully you will enjoy it here!!!"
         await guild.system_channel.send(message)
         role = nextcord.utils.get(message.guild.roles, name = "squad")
-        member.add_role(role)
+        await client.add_role(member, role)
 
 @client.event
 async def on_member_leave(member):
