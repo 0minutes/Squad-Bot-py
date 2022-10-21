@@ -136,8 +136,8 @@ async def generate(ctx: commands.context, *, prompt: str):
 
 ## Hi COMMAND
 @client.command(name="hi")
-async def Sendmessage(ctx):
-    await ctx.reply("Hello! :D")
+async def hi(ctx):
+    await ctx.reply("Hello there! :D")
 
 ## Say command
 
