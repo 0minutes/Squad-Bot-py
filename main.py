@@ -15,6 +15,8 @@ from nextcord.ext import commands
 from datetime import timedelta, datetime
 from PIL import Image
 from io import BytesIO
+from nextcord.utils import get
+
 
 intents = nextcord.Intents().all()
 client = commands.Bot(command_prefix=".", intents=intents)
@@ -181,10 +183,10 @@ async def socials(ctx):
 async def on_member_join(member):
     guild = member.guild
     if guild.system_channel is not None:
-        message = f"Welcome {member.mention} to {guild.name}, hopefully you will enjoy it here!!!"
+        message = f"Welcome {member.mention} to {guild.name}. Make sure you check you #rules, bot prefix is '.' hopefully you will enjoy it here!"
         await guild.system_channel.send(message)
-        role = nextcord.utils.get(message.guild.roles, name = "squad")
-        await client.add_role(member, role)
+    role = nextcord.utils.get(message.guild.roles, name = "Squad")
+    await client.add_role(member, role)
 
 @client.event
 async def on_member_leave(member):
