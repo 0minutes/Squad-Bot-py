@@ -152,8 +152,27 @@ async def say(ctx, *, message):
 
 ##ROLL COMMAND
 @client.command(name="roll")
-async def Random(ctx):
-    await ctx.reply(random.randint(1, 100))
+async def Random(ctx, min, max):
+    min = int(min)
+    max = int(max)
+    await ctx.reply(random.randint(min, max))
+
+##GUESS COMMAND
+##@client.command(name="guess")
+##async def Random(ctx, *, message):
+##    await ctx.reply("I thought of a number between **1 and 100**")
+##    guesses = 5
+##    TheGuess = int(message)
+##    num = random.randint(1, 100)
+##
+##    if TheGuess == num:
+##        await ctx.reply(f"{TheGuess} was the the number I guessed! Good Job!")
+##    if TheGuess > num:
+##        await ctx.reply(f"The number that you have guesses is **higher** than the one I guessed. **You have {guesses - 1} attempts left**")
+##    if TheGuess < num:
+##        await ctx.reply(f"The number that you have guesses is **lower** than the one I guessed. **You have {guesses - 1} attempts left**")
+##    if guesses == 0:
+##        await ctx.reply(f"You have no more guesses left ): Unlcuky")
 
 ## HOW GAY
 
@@ -187,14 +206,6 @@ async def on_member_join(member):
         await guild.system_channel.send(message)
     role = nextcord.utils.get(message.guild.roles, name = "Squad")
     await client.add_role(member, role)
-
-@client.event
-async def on_member_leave(member):
-    guild = member.guild
-    if guild.system_channel is not None:
-        msg = f"{member.mention} Sadly left ):"
-        await guild.system_channel.send(msg)
-
 
 
 #### !!!MODERATION!!! ###
