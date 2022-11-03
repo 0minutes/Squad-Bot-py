@@ -152,10 +152,16 @@ async def say(ctx, *, message):
 
 ##ROLL COMMAND
 @client.command(name="roll")
-async def Random(ctx, min, max):
+async def roll(ctx, min, max):
     min = int(min)
     max = int(max)
     await ctx.reply(random.randint(min, max))
+@roll.error
+async def roll_error(ctx:commands.Context, error: commands.CommandError):
+    if isinstance(error, commands.errors.MissingRequiredArgument):
+        await ctx.reply(random.randint(1, 100))
+        return
+
 
 ##GUESS COMMAND
 ##@client.command(name="guess")
