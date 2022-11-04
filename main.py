@@ -171,15 +171,15 @@ async def guess(ctx):
     print(num)
     while True:
         if guesses>5:
-            await ctx.send(f"No more attempts left, the number i chose was {num} :grimacing: Better luck next time!")
+            await ctx.reply("No more attempts left")
             break
         msg = await client.wait_for('message',check=lambda m:m.author == ctx.author and m.channel == ctx.channel and m.content.isdigit())
         guesses+=1
         num_ = int(msg.content)
         if num!=num_:
-            await ctx.send(f"Incorrect! The number that I chose is {'higher' if num_<num else 'lower'}")
+            await ctx.reply(f"Incorrect! The number that I chose is {'higher' if num_<num else 'lower'}")
         else:
-            await ctx.send(f"Correct! The number that I chose was {num}")
+            await ctx.reply(f"Correct! The number that I chose was {num}")
             break
 
 
@@ -335,4 +335,4 @@ async def rules_error(ctx:commands.Context, error: commands.CommandError):
         await ctx.reply(f"I dont have premissions to do that!")
         return
 
-client.run("MTAyNzk4OTMwNTMyMDI5NjQ1OA.GNz7mp.elHqewsbrKeG41EhPYzUqyXIh5cb-OzEnpHmgo")
+client.run("MTAyNzk4OTMwNTMyMDI5NjQ1OA.GB-3Bf.QGEciF2oNYO3zKklBUPPqMMB5JjMBiJJYu85bI")
