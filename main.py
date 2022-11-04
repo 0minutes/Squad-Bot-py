@@ -170,7 +170,7 @@ async def guess(ctx):
     num = random.randint(1, 100)
     print(num)
     while True:
-        if guesses>5:
+        if guesses == 5:
             await ctx.reply("No more attempts left")
             break
         msg = await client.wait_for('message',check=lambda m:m.author == ctx.author and m.channel == ctx.channel and m.content.isdigit())
