@@ -9,7 +9,7 @@ import datetime
 import humanfriendly
 import time
 from craiyon import Craiyon
-from nextcord import Embed, Member, bans, colour
+from nextcord import Embed, Member, bans, Colour
 from nextcord.ui import Button, View
 from nextcord.ext import commands
 from datetime import timedelta, datetime
@@ -163,22 +163,26 @@ async def roll_error(ctx:commands.Context, error: commands.CommandError):
         return
 
 
-##GUESS COMMAND
-##@client.command(name="guess")
-##async def Random(ctx, *, message):
-##    await ctx.reply("I thought of a number between **1 and 100**")
-##    guesses = 5
-##    TheGuess = int(message)
-##    num = random.randint(1, 100)
-##
-##    if TheGuess == num:
-##        await ctx.reply(f"{TheGuess} was the the number I guessed! Good Job!")
-##    if TheGuess > num:
-##        await ctx.reply(f"The number that you have guesses is **higher** than the one I guessed. **You have {guesses - 1} attempts left**")
-##    if TheGuess < num:
-##        await ctx.reply(f"The number that you have guesses is **lower** than the one I guessed. **You have {guesses - 1} attempts left**")
-##    if guesses == 0:
-##        await ctx.reply(f"You have no more guesses left ): Unlcuky")
+@client.command(name="guess")
+async def guess(ctx):
+    await ctx.reply("I thought of a number between **1 and 100, You got 5 guesses good luck!**")
+    guesses = 0
+    num = random.randint(1, 100)
+    print(num)
+    while True:
+        if guesses>5:
+            await ctx.send(f"No more attempts left, the number i chose was {num} :grimacing: Better luck next time!")
+            break
+        msg = await client.wait_for('message',check=lambda m:m.author == ctx.author and m.channel == ctx.channel and m.content.isdigit())
+        guesses+=1
+        num_ = int(msg.content)
+        if num!=num_:
+            await ctx.send(f"Incorrect! The number that I chose is {'higher' if num_<num else 'lower'}")
+        else:
+            await ctx.send(f"Correct! The number that I chose was {num}")
+            break
+
+
 
 ## HOW GAY
 
@@ -238,7 +242,7 @@ async def rules(ctx):
 
 bad_words = ["bad_test","cunt","fk u","fuck","fuck u","fuck you","dick head","nigger","nga","nigga","paki","dumbass","gay sex","jerk off","KKK","retard","wanker","boobs","titties","tits","tit","https://www.pornhub.com","pornhub","porn","pedophile"]
 
-
+##Checkes the message
 @client.event
 async def on_message(message):
     if message.author.id == client.user.id:
