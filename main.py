@@ -29,8 +29,9 @@ client.remove_command("help")
 @client.command(name="help")
 async def help(ctx):
     embed = Embed(color=0xab1111, title="Basic Commands List")
-    embed.add_field(name=".roll", value="get a random number 1 - 100", inline=False)
-    embed.add_field(name=".hi", value="bot replies with hi", inline=False)
+    embed.add_field(name=".roll (1 100)", value="get a random number 1 - 100, can also be anything you like by just doing .roll 1 10", inline=False)
+    embed.add_field(name=".guess", value="Can try and guess a number between 1 and 100 with 5 attempts.(you will be getting hits)", inline=False)
+    embed.add_field(name=".hi", value="if you're feeling lonely bot replies with hi", inline=False)
     embed.add_field(name=".howgay", value="The bots predicts how gay you are", inline=False)
     embed.add_field(name=".socials", value="Gives you a list of my socials", inline=False)
     embed.add_field(name=".profile (@user)", value="lets you see your profile and others!", inline=False)
@@ -141,6 +142,13 @@ async def generate(ctx: commands.context, *, prompt: str):
 async def hi(ctx):
     await ctx.reply("Hello there! :D")
 
+##arkyhh
+Arkyhhs = ["Arkyhh :smirk:", "Arkyhh lookin' sus :face_with_open_eyes_and_hand_over_mouth:", "Arkyhh go stupid go crazy balalalala", "Feet pics from Arkyhh at https://www.gegudkiddo.com","proof that earth is flat compiled by Arkyhh: https://www.youtube.com/watch?v=fF6T7GWPygk","Cool PC tricks by Akryhh number one : delete folder named syst..."]
+@client.command(name="Arkyhh")
+@commands.cooldown(1, 30, commands.BucketType.user)
+async def Arkyhh(ctx):
+    await ctx.send(random.choice(Arkyhhs))
+
 ## Say command
 
 @client.command(name="say")
@@ -166,22 +174,21 @@ async def roll_error(ctx:commands.Context, error: commands.CommandError):
 @client.command(name="guess")
 async def guess(ctx):
     await ctx.reply("I thought of a number between **1 and 100, You got 5 guesses good luck!**")
-    guesses = 0
+    guesses = 5
     num = random.randint(1, 100)
     print(num)
     while True:
-        if guesses == 5:
-            await ctx.reply("No more attempts left")
-            break
         msg = await client.wait_for('message',check=lambda m:m.author == ctx.author and m.channel == ctx.channel and m.content.isdigit())
-        guesses+=1
+        guesses-=1
         num_ = int(msg.content)
         if num!=num_:
-            await ctx.reply(f"Incorrect! The number that I chose is {'higher' if num_<num else 'lower'}")
+            await ctx.send(f"Incorrect! The number that I chose is {'**higher**' if num_<num else '**lower**'} you have *{guesses} guesses left*")
         else:
-            await ctx.reply(f"Correct! The number that I chose was {num}")
+            await ctx.send(f"Correct! You guessed the number in **{5 - guesses} guesses!**")
             break
-
+        if guesses == 0:
+            await ctx.send(f"Incorrect! The number that I chose was **{num}**, better luck next time")
+            break
 
 
 ## HOW GAY
@@ -335,4 +342,4 @@ async def rules_error(ctx:commands.Context, error: commands.CommandError):
         await ctx.reply(f"I dont have premissions to do that!")
         return
 
-client.run("MTAyNzk4OTMwNTMyMDI5NjQ1OA.GB-3Bf.QGEciF2oNYO3zKklBUPPqMMB5JjMBiJJYu85bI")
+client.run("MTAyNzk4OTMwNTMyMDI5NjQ1OA.Grcnfm.pMiJluM4UCB7pC_SD7fV5sSKGfyJPuSFFFds1E")
