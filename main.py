@@ -126,6 +126,8 @@ async def Server(ctx):
 async def invite(ctx):
     await ctx.reply("Here is a link to my discord server! - https://discord.gg/vbNjVExh77")
 
+##GENERATOR 
+
 @client.command(name="generate")
 async def generate(ctx: commands.context, *, prompt: str):
     ETA = int(time.time() + 60)
@@ -143,11 +145,17 @@ async def hi(ctx):
     await ctx.reply("Hello there! :D")
 
 ##arkyhh
-Arkyhhs = ["Arkyhh :smirk:", "Arkyhh lookin' sus :face_with_open_eyes_and_hand_over_mouth:", "Arkyhh go stupid go crazy balalalala", "Feet pics from Arkyhh at https://www.gegudkiddo.com","proof that earth is flat compiled by Arkyhh: https://www.youtube.com/watch?v=fF6T7GWPygk","Cool PC tricks by Akryhh number one : delete folder named syst..."]
+Arkyhhs = ["Arkyhh :smirk:", "Arkyhh lookin' sus :face_with_open_eyes_and_hand_over_mouth:", "Arkyhh go stupid go crazy balalalala", "Feet pics from Arkyhh at https://www.gegudkiddo.com","proof that earth is flat compiled by Arkyhh: https://www.youtube.com/watch?v=fF6T7GWPygk","Cool PC tricks by Akryhh number one : delete folder named syst...","Arkyhh when he get's a good skin in his shop - :no_entry_sign: :money_with_wings:"]
 @client.command(name="Arkyhh")
 @commands.cooldown(1, 30, commands.BucketType.user)
 async def Arkyhh(ctx):
     await ctx.send(random.choice(Arkyhhs))
+
+@Arkyhh.error
+async def Arkyhh_error(ctx:commands.Context, error: commands.errors.CommandOnCooldown):
+    if isinstance(error, commands.errors.CommandOnCooldown):
+        await ctx.reply(f"You can only use this command once every 30 socends, Try again in {error.retry_after:.2f}s")
+        return
 
 ## Say command
 
@@ -170,8 +178,9 @@ async def roll_error(ctx:commands.Context, error: commands.CommandError):
         await ctx.reply(random.randint(1, 100))
         return
 
-
+##GUESS COMMAND
 @client.command(name="guess")
+@commands.cooldown(1, 60, commands.BucketType.user)
 async def guess(ctx):
     await ctx.reply("I thought of a number between **1 and 100, You got 5 guesses good luck!**")
     guesses = 5
@@ -189,6 +198,12 @@ async def guess(ctx):
         if guesses == 0:
             await ctx.send(f"Incorrect! The number that I chose was **{num}**, better luck next time")
             break
+## GUESS ERROR
+@guess.error
+async def Guess_error(ctx:commands.Context, error: commands.errors.CommandOnCooldown):
+    if isinstance(error, commands.errors.CommandOnCooldown):
+        await ctx.reply(f"You can only use this command once every 60 socends, Try again in {error.retry_after:.2f}s")
+        return
 
 
 ## HOW GAY
