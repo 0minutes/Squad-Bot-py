@@ -17,11 +17,16 @@ from PIL import Image
 from io import BytesIO
 from nextcord.utils import get
 
+##config = {
+##    "token" "MTAyNzk4OTMwNTMyMDI5NjQ1OA.GmjJcv.US4Ixj2RzyYoDYtgUAlXS-fyXKkaXY7Kr6LhcM"
+##    "prefix" "."
+##}
 
+prefix = "."
 intents = nextcord.Intents().all()
-client = commands.Bot(command_prefix=".", intents=intents)
+client = commands.Bot(command_prefix=prefix, intents=intents)
 
-
+print("LOGS:")
 
 ##HELP COMMAND
 client.remove_command("help")
@@ -65,6 +70,7 @@ async def tier(ctx, tier:int, max=50, defualt=1, BPfinishEpilogue = 1162500, BPf
     ## IF TIER IS LOWER THAN 50 DO THE CALCULATION
     if tier <= max:
         xp = int(tier) * 750 + 500
+        TierLog = print(f"TierLog: {tier}")
         ##totalxp = 
         await ctx.reply(f"tier {tier} requires {xp}XP")
     ### ELSE REPLY WITH - 
@@ -135,9 +141,11 @@ async def generate(ctx: commands.context, *, prompt: str):
     generator = Craiyon()
     endResult = generator.generate(prompt)
     images = endResult.images
+    GenLog = print(f'GenLog: "{prompt}"')
     for i in images:
         image = BytesIO(base64.decodebytes(i.encode("utf-8")))
         return await msg.edit(content="Image Generated! Make sure to visit **https://www.craiyon.com/** if ur cool :>", file = nextcord.File(image, f"{prompt}.png"))
+
 
 ## Hi COMMAND
 @client.command(name="hi")
@@ -157,6 +165,18 @@ async def Arkyhh_error(ctx:commands.Context, error: commands.errors.CommandOnCoo
         await ctx.reply(f"You can only use this command once every 30 socends, Try again in {error.retry_after:.2f}s")
         return
 
+##playlist command
+
+@client.command(name="connect")
+async def join(ctx):
+    channel = ctx.author.voice.channel
+    await channel.connect()
+
+@client.command(name="disconnect")
+async def leave(ctx):
+    await ctx.voice_client.disconnect()
+
+
 ## Say command
 
 @client.command(name="say")
@@ -167,16 +187,11 @@ async def say(ctx, *, message):
     await ctx.send(f"{message}")
 
 ##ROLL COMMAND
-@client.command(name="roll")
-async def roll(ctx, min, max):
-    min = int(min)
-    max = int(max)
-    await ctx.reply(random.randint(min, max))
-@roll.error
-async def roll_error(ctx:commands.Context, error: commands.CommandError):
-    if isinstance(error, commands.errors.MissingRequiredArgument):
-        await ctx.reply(random.randint(1, 100))
-        return
+@client.command(name='roll')
+async def roll(ctx, min='1', max='100'): 
+    await ctx.reply(random.randint(int(min), int(max)))
+
+RollLog = print(f"RollLog: Min {min} - Max {max}")
 
 ##GUESS COMMAND
 @client.command(name="guess")
@@ -185,7 +200,7 @@ async def guess(ctx):
     await ctx.reply("I thought of a number between **1 and 100, You got 5 guesses good luck!**")
     guesses = 5
     num = random.randint(1, 100)
-    print(num)
+    GuessLog = print(f"GuessLog: {num}")
     while True:
         msg = await client.wait_for('message',check=lambda m:m.author == ctx.author and m.channel == ctx.channel and m.content.isdigit())
         guesses-=1
@@ -357,4 +372,4 @@ async def rules_error(ctx:commands.Context, error: commands.CommandError):
         await ctx.reply(f"I dont have premissions to do that!")
         return
 
-client.run("MTAyNzk4OTMwNTMyMDI5NjQ1OA.Grcnfm.pMiJluM4UCB7pC_SD7fV5sSKGfyJPuSFFFds1E")
+client.run("MTAyNzk4OTMwNTMyMDI5NjQ1OA.GmjJcv.US4Ixj2RzyYoDYtgUAlXS-fyXKkaXY7Kr6LhcM")
