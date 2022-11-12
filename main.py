@@ -17,21 +17,24 @@ from PIL import Image
 from io import BytesIO
 from nextcord.utils import get
 
-##config = {
-##    "token" "MTAyNzk4OTMwNTMyMDI5NjQ1OA.GmjJcv.US4Ixj2RzyYoDYtgUAlXS-fyXKkaXY7Kr6LhcM"
-##    "prefix" "."
-##}
+config = {
+    'token': 'MTAyNzk4OTMwNTMyMDI5NjQ1OA.GViMtU.zmaH3mvtpy-_Ge_P1GLTG2mluN60WbuMLkv2mo',
+    'prefix': '.',
+}
 
-prefix = "."
-intents = nextcord.Intents().all()
-client = commands.Bot(command_prefix=prefix, intents=intents)
+intents =  intents = nextcord.Intents().all()
 
-print("LOGS:")
+bot = commands.Bot(command_prefix=config["prefix"], intents=intents)
+
+@bot.event
+async def on_ready():
+    print(f"""Logged in as "{bot.user}"
+LOGS:""")
 
 ##HELP COMMAND
-client.remove_command("help")
+bot.remove_command("help")
 
-@client.command(name="help")
+@bot.command(name="help")
 async def help(ctx):
     embed = Embed(color=0xab1111, title="Basic Commands List")
     embed.add_field(name=".roll (1 100)", value="get a random number 1 - 100, can also be anything you like by just doing .roll 1 10", inline=False)
@@ -47,7 +50,7 @@ async def help(ctx):
     await ctx.reply(embed=embed)
 
 ### MODERATION HELP
-@client.command(name="helpM")
+@bot.command(name="helpM")
 async def helpM(ctx):
     embed = Embed(color=0x780200, title="Moderation Commands List")
     embed.add_field(name=".ban", value="ban members of the server/guild", inline=False)
@@ -58,14 +61,13 @@ async def helpM(ctx):
 ## !!!VALROANT!!! ###
 ##VAL HELP
 
-@client.command(name="valorant")
+@bot.command(name="valorant")
 async def valorant(ctx):
     embed = Embed(color=0xdc3d4b, title="Valorant Help")
     embed.add_field(name=".tier + tier level", value="tells you how much XP the tier requires", inline=False)
     await ctx.reply(embed=embed)
 
-
-@client.command(name="tier")
+@bot.command(name="tier")
 async def tier(ctx, tier:int, max=50, defualt=1, BPfinishEpilogue = 1162500, BPfinish = 980000):
     ## IF TIER IS LOWER THAN 50 DO THE CALCULATION
     if tier <= max:
@@ -76,18 +78,17 @@ async def tier(ctx, tier:int, max=50, defualt=1, BPfinishEpilogue = 1162500, BPf
     ### ELSE REPLY WITH - 
     else:
         await ctx.reply("After tier 50 to 55 takes 36500XP")
-
+##IF NO TIER LVL DISPLAY THIS MSG -
 @tier.error
 async def tier_error(ctx:commands.Context, error: commands.CommandError):
     if isinstance(error, commands.errors.MissingRequiredArgument):
         await ctx.reply(f"tier is missing an argument")
         return
 
-### !!!CASUAL COMMANDS!!! ###
+###----------------------------------------------------------------------------!!!CASUAL COMMANDS!!!-----------------------------------------------------------------------###
 
 ##INFO
-
-@client.command(name="profile")
+@bot.command(name="profile")
 async def Profile(ctx, user: Member=None):
 
     if user == None:
@@ -109,7 +110,7 @@ async def Profile(ctx, user: Member=None):
     embed.set_thumbnail(user.display_avatar)
     await ctx.reply(embed=embed)
 
-@client.command(name="server")
+@bot.command(name="server")
 async def Server(ctx):
     guild = ctx.message.author.guild
     embed = Embed(title=guild.name, color=0xab1111)
@@ -128,13 +129,13 @@ async def Server(ctx):
     await ctx.reply(embed=embed)
 
 ##INVITE COMMAND!
-@client.command("invite")
+@bot.command("invite")
 async def invite(ctx):
     await ctx.reply("Here is a link to my discord server! - https://discord.gg/vbNjVExh77")
 
 ##GENERATOR 
 
-@client.command(name="generate")
+@bot.command(name="generate")
 async def generate(ctx: commands.context, *, prompt: str):
     ETA = int(time.time() + 60)
     msg = await ctx.send(f"Go grab a coffee, this may take a while :D... ETA: <t:{ETA}:R>")
@@ -148,13 +149,13 @@ async def generate(ctx: commands.context, *, prompt: str):
 
 
 ## Hi COMMAND
-@client.command(name="hi")
+@bot.command(name="hi")
 async def hi(ctx):
     await ctx.reply("Hello there! :D")
 
 ##arkyhh
 Arkyhhs = ["Arkyhh :smirk:", "Arkyhh lookin' sus :face_with_open_eyes_and_hand_over_mouth:", "Arkyhh go stupid go crazy balalalala", "Feet pics from Arkyhh at https://www.gegudkiddo.com","proof that earth is flat compiled by Arkyhh: https://www.youtube.com/watch?v=fF6T7GWPygk","Cool PC tricks by Akryhh number one : delete folder named syst...","Arkyhh when he get's a good skin in his shop - :no_entry_sign: :money_with_wings:"]
-@client.command(name="Arkyhh")
+@bot.command(name="Arkyhh")
 @commands.cooldown(1, 30, commands.BucketType.user)
 async def Arkyhh(ctx):
     await ctx.send(random.choice(Arkyhhs))
@@ -167,19 +168,19 @@ async def Arkyhh_error(ctx:commands.Context, error: commands.errors.CommandOnCoo
 
 ##playlist command
 
-@client.command(name="connect")
+@bot.command(name="connect")
 async def join(ctx):
     channel = ctx.author.voice.channel
     await channel.connect()
 
-@client.command(name="disconnect")
+@bot.command(name="disconnect")
 async def leave(ctx):
-    await ctx.voice_client.disconnect()
+    await ctx.voice_bot.disconnect()
 
 
 ## Say command
 
-@client.command(name="say")
+@bot.command(name="say")
 async def say(ctx, *, message):
     ## DELETE ORIGINAL MSG
     await ctx.message.delete()
@@ -187,14 +188,14 @@ async def say(ctx, *, message):
     await ctx.send(f"{message}")
 
 ##ROLL COMMAND
-@client.command(name='roll')
+@bot.command(name='roll')
 async def roll(ctx, min='1', max='100'): 
+    RollLog = print(f"RollLog: Min {min} - Max {max}")
+    print(RollLog)
     await ctx.reply(random.randint(int(min), int(max)))
 
-RollLog = print(f"RollLog: Min {min} - Max {max}")
-
 ##GUESS COMMAND
-@client.command(name="guess")
+@bot.command(name="guess")
 @commands.cooldown(1, 60, commands.BucketType.user)
 async def guess(ctx):
     await ctx.reply("I thought of a number between **1 and 100, You got 5 guesses good luck!**")
@@ -202,7 +203,7 @@ async def guess(ctx):
     num = random.randint(1, 100)
     GuessLog = print(f"GuessLog: {num}")
     while True:
-        msg = await client.wait_for('message',check=lambda m:m.author == ctx.author and m.channel == ctx.channel and m.content.isdigit())
+        msg = await bot.wait_for('message',check=lambda m:m.author == ctx.author and m.channel == ctx.channel and m.content.isdigit())
         guesses-=1
         num_ = int(msg.content)
         if num!=num_:
@@ -223,12 +224,12 @@ async def Guess_error(ctx:commands.Context, error: commands.errors.CommandOnCool
 
 ## HOW GAY
 
-@client.command(name="howgay")
+@bot.command(name="howgay")
 async def howgay(ctx, member: nextcord.Member):
     await ctx.reply(f"{member.mention} is {random.randint(1, 100)}% :rainbow:")
 
 ##SOCIALS COMMAND
-@client.command(name="socials")
+@bot.command(name="socials")
 async def socials(ctx):
     Twitch = Button(label="Twitch", url="https://www.twitch.tv/0minutesval")
     Youtube = Button(label="Youtube", url="https://www.youtube.com/channel/UC4IZby3-37G0sZO0ZSDmCKg")
@@ -245,23 +246,24 @@ async def socials(ctx):
 
 ##WELCOME 
 
-@client.event
+@bot.event
 async def on_member_join(member):
     guild = member.guild
     if guild.system_channel is not None:
-        message = f"Welcome {member.mention} to {guild.name}. Make sure you check you #rules, bot prefix is '.' hopefully you will enjoy it here!"
+        message = f"Welcome {member.mention} to {guild.name}. Make sure you check you #rules , bot prefix is '.' hopefully you will enjoy it here!"
         await guild.system_channel.send(message)
     role = nextcord.utils.get(message.guild.roles, name = "Squad")
-    await client.add_role(member, role)
+    await bot.add_role(member, role)
 
 
-#### !!!MODERATION!!! ###
+
+#### ------------------------------------------------------------------------------!!!MODERATION!!!-------------------------------------------------- ###
 
 ##RULES 
 @commands.guild_only()
 @commands.has_permissions(manage_messages = True)
 @commands.bot_has_permissions(manage_messages = True)
-@client.command(name="rules")
+@bot.command(name="rules")
 async def rules(ctx):
     embed = Embed(color=0xab1111, title="`Rules`")
     embed.add_field(name="`1. Be respectful`", value="You must respect all users, regardless of your liking towards them. Treat others the way you want to be treated.")
@@ -280,9 +282,9 @@ async def rules(ctx):
 bad_words = ["bad_test","cunt","fk u","fuck","fuck u","fuck you","dick head","nigger","nga","nigga","paki","dumbass","gay sex","jerk off","KKK","retard","wanker","boobs","titties","tits","tit","https://www.pornhub.com","pornhub","porn","pedophile"]
 
 ##Checkes the message
-@client.event
+@bot.event
 async def on_message(message):
-    if message.author.id == client.user.id:
+    if message.author.id == bot.user.id:
         return
     msg_content = message.content.lower()
     
@@ -290,20 +292,20 @@ async def on_message(message):
     if any(word in msg_content for word in bad_words):
         await message.delete()
         await message.channel.send("Dont say that again!")
-    await client.process_commands(message)
+    await bot.process_commands(message)
 
 ##.CLEAR COMMAND
 @commands.guild_only()
 @commands.has_permissions(manage_messages = True)
 @commands.bot_has_permissions(manage_messages = True)
-@client.command(name="clear")
+@bot.command(name="clear")
 async def clear(ctx, amount=5):    
     await ctx.channel.purge(limit=amount+1)
 
 ##UNBAN
 
 ##BAN COMMAND
-@client.command(name="ban")
+@bot.command(name="ban")
 @commands.guild_only()
 @commands.has_permissions(ban_members = True)
 @commands.bot_has_permissions(ban_members = True)
@@ -315,7 +317,7 @@ async def ban(ctx:commands.Context, member: Member, *, reason:str=None):
     await ctx.reply(f"**{member.name} is banned for {reason}**")
 
 ##KICK COMMAND
-@client.command(name="kick")
+@bot.command(name="kick")
 @commands.guild_only()
 @commands.has_permissions(kick_members = True)
 @commands.bot_has_permissions(kick_members = True)
@@ -361,15 +363,4 @@ async def clear_error(ctx:commands.Context, error: commands.CommandError):
         await ctx.reply(f"I dont have premissions to do that!")
         return
 
-##RULES ERROR
-@rules.error
-async def rules_error(ctx:commands.Context, error: commands.CommandError):
-    if isinstance(error, commands.MissingPermissions):
-        await ctx.reply(f"you do not have the manage messages premissions!")
-        return
-    
-    elif isinstance(error, commands.BotMissingPermissions):
-        await ctx.reply(f"I dont have premissions to do that!")
-        return
-
-client.run("MTAyNzk4OTMwNTMyMDI5NjQ1OA.GmjJcv.US4Ixj2RzyYoDYtgUAlXS-fyXKkaXY7Kr6LhcM")
+bot.run(config["token"])
