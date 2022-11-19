@@ -45,9 +45,11 @@ async def help(ctx):
     embed.add_field(name=".profile (@user)", value="lets you see your profile and others!", inline=False)
     embed.add_field(name=".server", value="lets you see servers profile!", inline=False)
     embed.add_field(name=".generate", value="Generates images (Powered by craiyon.com)", inline=False)
+    embed.add_field(name=".createvoice", value="You can create and edit a voice channel with - .createvoice name, user limit, bitrate exapmle .createvoice Help_Example 5 128 make sure the name is one singular word. The channel deletes itself after 24hours!", inline=False)
     embed.add_field(name="**.helpM**", value="**Moderation Help**", inline=False)
     embed.add_field(name="**valorant**", value="**Valorant Commands Help**", inline=False)
     await ctx.reply(embed=embed)
+
 
 ### MODERATION HELP
 @bot.command(name="helpM")
@@ -116,7 +118,8 @@ async def Server(ctx):
     embed = Embed(title=guild.name, color=0xab1111)
     serverData = {
         "Owner" : guild.owner.mention,
-        "Channels" : len(guild.channels), 
+        "Channels" : len(guild.channels),
+        "Categories" : len(guild.categories),
         "Members" : guild.member_count,
         "Created at" : guild.created_at.strftime("%b %d, %Y, %T"),
         "Description" : guild.description,
@@ -127,6 +130,15 @@ async def Server(ctx):
 
     embed.set_thumbnail(guild.icon)
     await ctx.reply(embed=embed)
+
+##TEST CREATE VC
+@bot.command(name="createvoice")
+async def createvoice(ctx, name="Custom Voice", user_limit = int(5), bitrate = int(64)):
+    guild = ctx.message.author.guild
+    category = get(guild.categories, name="Custom VCs")
+    channel = await guild.create_voice_channel(name=name, user_limit=user_limit, category = category, bitrate = bitrate * 1000)
+    time.sleep(86400)
+    await channel.delete()
 
 ##INVITE COMMAND!
 @bot.command("invite")
@@ -265,16 +277,16 @@ async def on_member_join(member):
 @commands.bot_has_permissions(manage_messages = True)
 @bot.command(name="rules")
 async def rules(ctx):
-    embed = Embed(color=0xab1111, title="`Rules`")
-    embed.add_field(name="`1. Be respectful`", value="You must respect all users, regardless of your liking towards them. Treat others the way you want to be treated.")
-    embed.add_field(name="`2. No Inappropriate Language`", value="The messages with innapropriate words will be automatically removed. However, any derogatory language towards any user is prohibited.")
-    embed.add_field(name="`3. No spamming`", value="Don't send a lot of small messages right after each other. Do not disrupt chat by spamming.")
-    embed.add_field(name="`4. No adult/NSFW material`", value="This is a friendly server and not meant to share this kind of material.")
-    embed.add_field(name="`5. No offensive names and profile pictures`", value="You will be asked to change your name or picture if the staff deems them inappropriate.")
-    embed.add_field(name="`6. Server Raiding`", value="Raiding or mentions of raiding are not allowed.")
-    embed.add_field(name="`7. Direct & Indirect Threats`", value="Threats to other users of DDoS, Death, DoX, abuse, and other malicious threats are absolutely prohibited and disallowed.")
-    embed.add_field(name="`8. Follow the Discord Community Guidelines And TOS`", value="You can find them here: https://discordapp.com/guidelines and TOS: https://discord.com/TOS")
-    embed.add_field(name="`9. Enjoy`", value="Enjoy your stay here and have fun!")
+    embed = Embed(color=0x2F3136, description="""**・1. Be respectful**\n You must respect all users, regardless of your liking towards them. Treat others the way you want to be treated.\n
+    **・2. No Inappropriate Language**\n The messages with innapropriate words will be automatically removed. However, any derogatory language towards any user is prohibited.\n
+    **・3. No spamming**\n Don't send a lot of small messages right after each other. Do not disrupt chat by spamming.\n
+    **・4. No adult/NSFW material**\n This is a friendly server and not meant to share this kind of material.\n
+    **・5. No offensive names and profile pictures**\n You will be asked to change your name or picture if the staff deems them inappropriate.\n
+    **・6. Server Raiding**\n Raiding or mentions of raiding are not allowed.\n
+    **・7. Direct & Indirect Threats**\n Threats to other users of DDoS, Death, DoX, abuse, and other malicious threats are absolutely prohibited and disallowed\n
+    **・8. Follow the Discord Community Guidelines And TOS**\n You can find them here: https://discordapp.com/guidelines and TOS: https://discord.com/TOS\n
+    **・9. Enjoy**\n Make sure to have a great time \n""")
+    embed.set_author(name="SquadBot Server rules")
     await ctx.send(embed=embed)
 
 ##WORD FILTER
