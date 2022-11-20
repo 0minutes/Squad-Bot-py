@@ -288,14 +288,14 @@ class verify(nextcord.ui.View):
 @commands.bot_has_permissions(manage_messages = True)
 @bot.command(name="verify")
 async def Verify(ctx):
-    embed = Embed(color=0x2F3136, description="""@everyone Make sure you read the server #rules after the verification. For any help message the owner @0minutes#0201 \n
+    embed = Embed(color=0x2F3136, description="""Make sure you read the server <#1028421022204051556>. For any help message the owner <@692430762896523406> \n
     For bot help do .help and make sure to have fun!\n
     To Verify Click the button below :arrow_down:\n""")
     embed.set_author(name="SquadBot Verify", url="https://cdn.discordapp.com/emojis/947101075981340713.webp?size=96&quality=lossless")
-    embed.set_footer(text=f"• Made By 0minutes#0201")
+    embed.set_footer(text=f"• Made By 0minutes")
     await ctx.send(embed=embed, view = verify())
 
-##RULES + VERIFY
+##RULES
 @commands.guild_only()
 @commands.has_permissions(manage_messages = True)
 @commands.bot_has_permissions(manage_messages = True)
@@ -312,7 +312,7 @@ async def rules(ctx):
     **・9. Follow the Discord Community Guidelines And TOS**\n You can find them here:\n https://discordapp.com/guidelines\n  https://discord.com/TOS\n \n""")
     embed.set_author(name="SquadBot Server rules", url="https://cdn.discordapp.com/emojis/947101075981340713.webp?size=96&quality=lossless")
     embed.set_footer(text=f"• Rules By 0minutes#0201")
-    await ctx.send(embed=embed, view = verify())
+    await ctx.send(embed=embed)
 ##WORD FILTER
 
 bad_words = ["bad_test","cunt","fk u","fuck","fuck u","fuck you","dick head","nigger","nga","nigga","paki","dumbass","gay sex","jerk off","KKK","retard","wanker","boobs","titties","tits","tit","https://www.pornhub.com","pornhub","porn","pedophile"]
