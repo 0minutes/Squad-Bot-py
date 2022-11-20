@@ -269,11 +269,10 @@ async def on_member_join(member):
     await bot.add_role(member, role)
 
 
-
 #### ------------------------------------------------------------------------------!!!MODERATION!!!-------------------------------------------------- ###
 class verify(nextcord.ui.View):
     def __init__(self):
-        super().__init__()
+        super().__init__(timeout = None)
         self.value = None
     
     @nextcord.ui.button(label="Verify", style=nextcord.ButtonStyle.success)
