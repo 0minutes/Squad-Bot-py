@@ -135,9 +135,14 @@ async def Server(ctx):
 ##TEST CREATE VC
 @bot.command(name="createvoice")
 async def createvoice(ctx, name="Custom Voice", user_limit = int(5), bitrate = int(64)):
+    user = ctx.message.author
     guild = ctx.message.author.guild
     category = get(guild.categories, name="Custom VCs")
     channel = await guild.create_voice_channel(name=name, user_limit=user_limit, category = category, bitrate = bitrate * 1000)
+    embed = Embed(color=0x2F3136, description=f"{name} VC was made with the user limit being {user_limit} and bitrate of {bitrate} by <@{user.id}> ")
+    embed.set_author(name=f"{name} VC", url="https://cdn.discordapp.com/emojis/947101075981340713.webp?size=96&quality=lossless")
+    embed.set_footer(text="Comlpleted successfully")
+    await ctx.send(embed=embed)
     time.sleep(86400)
     await channel.delete()
 
@@ -311,7 +316,7 @@ async def rules(ctx):
     **・8. Respect Staff team and members** Please respect the staff team as they are here to help you and guide you through our bot and respect the members and not get yourself in trouble.\n
     **・9. Follow the Discord Community Guidelines And TOS**\n You can find them here:\n https://discordapp.com/guidelines\n  https://discord.com/TOS\n \n""")
     embed.set_author(name="SquadBot Server rules", url="https://cdn.discordapp.com/emojis/947101075981340713.webp?size=96&quality=lossless")
-    embed.set_footer(text=f"• Rules By 0minutes#0201")
+    embed.set_footer(text="• Rules By 0minutes#0201")
     await ctx.send(embed=embed)
 ##WORD FILTER
 
