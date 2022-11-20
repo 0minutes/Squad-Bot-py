@@ -36,7 +36,7 @@ bot.remove_command("help")
 
 @bot.command(name="help")
 async def help(ctx):
-    embed = Embed(color=0xab1111, title="Basic Commands List")
+    embed = Embed(color=0x2F3136, title="Basic Commands List")
     embed.add_field(name=".roll (1 100)", value="get a random number 1 - 100, can also be anything you like by just doing .roll 1 10", inline=False)
     embed.add_field(name=".guess", value="Can try and guess a number between 1 and 100 with 5 attempts.(you will be getting hits)", inline=False)
     embed.add_field(name=".hi", value="if you're feeling lonely bot replies with hi", inline=False)
@@ -54,7 +54,7 @@ async def help(ctx):
 ### MODERATION HELP
 @bot.command(name="helpM")
 async def helpM(ctx):
-    embed = Embed(color=0x780200, title="Moderation Commands List")
+    embed = Embed(color=0x2F3136, title="Moderation Commands List")
     embed.add_field(name=".ban", value="ban members of the server/guild", inline=False)
     embed.add_field(name=".kick", value="kicks a server member", inline=False)
     embed.add_field(name=".clear + amount", value="clears the ammount that you've set!", inline=False)
@@ -65,7 +65,7 @@ async def helpM(ctx):
 
 @bot.command(name="valorant")
 async def valorant(ctx):
-    embed = Embed(color=0xdc3d4b, title="Valorant Help")
+    embed = Embed(color=0x2F3136, title="Valorant Help")
     embed.add_field(name=".tier + tier level", value="tells you how much XP the tier requires", inline=False)
     await ctx.reply(embed=embed)
 
@@ -96,7 +96,7 @@ async def Profile(ctx, user: Member=None):
     if user == None:
         user = ctx.message.author
     inline = True
-    embed = Embed(title=user.name+"#"+user.discriminator, color=0xab1111)
+    embed = Embed(title=user.name+"#"+user.discriminator, color=0x2F3136)
     userData = {
         "Mention" : user.mention,
         "Nick" : user.nick, 
@@ -115,12 +115,13 @@ async def Profile(ctx, user: Member=None):
 @bot.command(name="server")
 async def Server(ctx):
     guild = ctx.message.author.guild
-    embed = Embed(title=guild.name, color=0xab1111)
+    embed = Embed(title=guild.name, color=0x2F3136)
     serverData = {
         "Owner" : guild.owner.mention,
         "Channels" : len(guild.channels),
         "Categories" : len(guild.categories),
         "Members" : guild.member_count,
+        "Roles" : guild.role_count,
         "Created at" : guild.created_at.strftime("%b %d, %Y, %T"),
         "Description" : guild.description,
     }
@@ -270,8 +271,32 @@ async def on_member_join(member):
 
 
 #### ------------------------------------------------------------------------------!!!MODERATION!!!-------------------------------------------------- ###
+class verify(nextcord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.value = None
+    
+    @nextcord.ui.button(label="Verify", style=nextcord.ButtonStyle.success)
+    async def demo1(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        role = 1043845192266031105
+        user = interaction.user
+        await user.add_roles(user.guild.get_role(role))
+        await interaction.response.send_message("Successfully verified!", ephemeral=True)
+    
+##VERIFY
+@commands.guild_only()
+@commands.has_permissions(manage_messages = True)
+@commands.bot_has_permissions(manage_messages = True)
+@bot.command(name="verify")
+async def Verify(ctx):
+    embed = Embed(color=0x2F3136, description="""@everyone Make sure you read the server #rules after the verification. For any help message the owner @0minutes#0201 \n
+    For bot help do .help and make sure to have fun!\n
+    To Verify Click the button below :arrow_down:\n""")
+    embed.set_author(name="SquadBot Verify", url="https://cdn.discordapp.com/emojis/947101075981340713.webp?size=96&quality=lossless")
+    embed.set_footer(text=f"• Made By 0minutes#0201")
+    await ctx.send(embed=embed, view = verify())
 
-##RULES 
+##RULES + VERIFY
 @commands.guild_only()
 @commands.has_permissions(manage_messages = True)
 @commands.bot_has_permissions(manage_messages = True)
@@ -284,11 +309,11 @@ async def rules(ctx):
     **・5. No offensive names and profile pictures**\n You will be asked to change your name or picture if the staff deems them inappropriate.\n
     **・6. Server Raiding**\n Raiding or mentions of raiding are not allowed.\n
     **・7. Direct & Indirect Threats**\n Threats to other users of DDoS, Death, DoX, abuse, and other malicious threats are absolutely prohibited and disallowed\n
-    **・8. Follow the Discord Community Guidelines And TOS**\n You can find them here: https://discordapp.com/guidelines and TOS: https://discord.com/TOS\n
-    **・9. Enjoy**\n Make sure to have a great time \n""")
-    embed.set_author(name="SquadBot Server rules")
-    await ctx.send(embed=embed)
-
+    **・8. Respect Staff team and members** Please respect the staff team as they are here to help you and guide you through our bot and respect the members and not get yourself in trouble.\n
+    **・9. Follow the Discord Community Guidelines And TOS**\n You can find them here:\n https://discordapp.com/guidelines\n  https://discord.com/TOS\n \n""")
+    embed.set_author(name="SquadBot Server rules", url="https://cdn.discordapp.com/emojis/947101075981340713.webp?size=96&quality=lossless")
+    embed.set_footer(text=f"• Rules By 0minutes#0201")
+    await ctx.send(embed=embed, view = verify())
 ##WORD FILTER
 
 bad_words = ["bad_test","cunt","fk u","fuck","fuck u","fuck you","dick head","nigger","nga","nigga","paki","dumbass","gay sex","jerk off","KKK","retard","wanker","boobs","titties","tits","tit","https://www.pornhub.com","pornhub","porn","pedophile"]
