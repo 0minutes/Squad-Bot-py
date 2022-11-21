@@ -11,11 +11,18 @@ import time
 from craiyon import Craiyon
 from nextcord import Embed, Member, bans, Colour
 from nextcord.ui import Button, View
-from nextcord.ext import commands
+from nextcord.ext import commands, application_checks
 from datetime import timedelta, datetime
 from PIL import Image
 from io import BytesIO
 from nextcord.utils import get
+import nextcord, asyncio, aiosqlite, humanfriendly
+from datetime import datetime
+from nextcord import Interaction, ChannelType, SlashOption
+from nextcord.ext import commands, tasks, application_checks
+from nextcord.abc import GuildChannel
+from datetime import datetime
+
 
 config = {
     'token': 'MTAyNzk4OTMwNTMyMDI5NjQ1OA.GViMtU.zmaH3mvtpy-_Ge_P1GLTG2mluN60WbuMLkv2mo',
@@ -34,67 +41,30 @@ LOGS:""")
 ##HELP COMMAND
 bot.remove_command("help")
 
-@bot.command(name="help")
-async def help(ctx):
+@bot.slash_command(name="help", description="Bot's commands!")
+async def help(interaction: nextcord.Interaction):
     embed = Embed(color=0x2F3136, title="Basic Commands List")
-    embed.add_field(name=".roll (1 100)", value="get a random number 1 - 100, can also be anything you like by just doing .roll 1 10", inline=False)
-    embed.add_field(name=".guess", value="Can try and guess a number between 1 and 100 with 5 attempts.(you will be getting hits)", inline=False)
-    embed.add_field(name=".hi", value="if you're feeling lonely bot replies with hi", inline=False)
-    embed.add_field(name=".howgay", value="The bots predicts how gay you are", inline=False)
-    embed.add_field(name=".socials", value="Gives you a list of my socials", inline=False)
-    embed.add_field(name=".profile (@user)", value="lets you see your profile and others!", inline=False)
-    embed.add_field(name=".server", value="lets you see servers profile!", inline=False)
-    embed.add_field(name=".generate", value="Generates images (Powered by craiyon.com)", inline=False)
-    embed.add_field(name=".createvoice", value="You can create and edit a voice channel with - .createvoice name, user limit, bitrate exapmle .createvoice Help_Example 5 128 make sure the name is one singular word. The channel deletes itself after 24hours!", inline=False)
-    embed.add_field(name="**.helpM**", value="**Moderation Help**", inline=False)
-    embed.add_field(name="**valorant**", value="**Valorant Commands Help**", inline=False)
-    await ctx.reply(embed=embed)
+    embed.add_field(name="roll", value="get a random number 1 - 100, can also be anything you like by just doing .roll 1 10", inline=False)
+    embed.add_field(name="guess", value="Can try and guess a number between 1 and 100 with 5 attempts.(you will be getting hits)", inline=False)
+    embed.add_field(name="socials", value="Gives you a list of my socials", inline=False)
+    embed.add_field(name="profile (@user)", value="lets you see your profile and others!", inline=False)
+    embed.add_field(name="server", value="lets you see servers profile!", inline=False)
+    embed.add_field(name="generate", value="Generates images (Powered by craiyon.com)", inline=False)
+    embed.add_field(name="createvoice", value="You can create and edit a voice channel with - .createvoice name, user limit, bitrate exapmle .createvoice Help_Example 5 128 make sure the name is one singular word. The channel deletes itself after 24hours!", inline=False)
+    embed.add_field(name="ban", value="ban members of the server/guild", inline=False)
+    embed.add_field(name="kick", value="kicks a server member", inline=False)
+    embed.add_field(name="purge + amount", value="clears the ammount that you've set!", inline=False)
+    await interaction.send(embed=embed)
 
-
-### MODERATION HELP
-@bot.command(name="helpM")
-async def helpM(ctx):
-    embed = Embed(color=0x2F3136, title="Moderation Commands List")
-    embed.add_field(name=".ban", value="ban members of the server/guild", inline=False)
-    embed.add_field(name=".kick", value="kicks a server member", inline=False)
-    embed.add_field(name=".clear + amount", value="clears the ammount that you've set!", inline=False)
-    await ctx.reply(embed=embed)
-
-## !!!VALROANT!!! ###
-##VAL HELP
-
-@bot.command(name="valorant")
-async def valorant(ctx):
-    embed = Embed(color=0x2F3136, title="Valorant Help")
-    embed.add_field(name=".tier + tier level", value="tells you how much XP the tier requires", inline=False)
-    await ctx.reply(embed=embed)
-
-@bot.command(name="tier")
-async def tier(ctx, tier:int, max=50, defualt=1, BPfinishEpilogue = 1162500, BPfinish = 980000):
-    ## IF TIER IS LOWER THAN 50 DO THE CALCULATION
-    if tier <= max:
-        xp = int(tier) * 750 + 500
-        TierLog = print(f"TierLog: {tier}")
-        ##totalxp = 
-        await ctx.reply(f"tier {tier} requires {xp}XP")
-    ### ELSE REPLY WITH - 
-    else:
-        await ctx.reply("After tier 50 to 55 takes 36500XP")
-##IF NO TIER LVL DISPLAY THIS MSG -
-@tier.error
-async def tier_error(ctx:commands.Context, error: commands.CommandError):
-    if isinstance(error, commands.errors.MissingRequiredArgument):
-        await ctx.reply(f"tier is missing an argument")
-        return
 
 ###----------------------------------------------------------------------------!!!CASUAL COMMANDS!!!-----------------------------------------------------------------------###
 
 ##INFO
-@bot.command(name="profile")
-async def Profile(ctx, user: Member=None):
+@bot.slash_command(name="profile")
+async def Profile(interaction: nextcord.Interaction, user: Member=None):
 
     if user == None:
-        user = ctx.message.author
+        user = interaction.user
     inline = True
     embed = Embed(title=user.name+"#"+user.discriminator, color=0x2F3136)
     userData = {
@@ -110,18 +80,17 @@ async def Profile(ctx, user: Member=None):
     embed.set_footer(text=f"id: {user.id}")
 
     embed.set_thumbnail(user.display_avatar)
-    await ctx.reply(embed=embed)
+    await interaction.send(embed=embed)
 
-@bot.command(name="server")
-async def Server(ctx):
-    guild = ctx.message.author.guild
+@bot.slash_command(name="server")
+async def Server(interaction: nextcord.Interaction):
+    guild = interaction.guild
     embed = Embed(title=guild.name, color=0x2F3136)
     serverData = {
         "Owner" : guild.owner.mention,
         "Channels" : len(guild.channels),
         "Categories" : len(guild.categories),
         "Members" : guild.member_count,
-        "Roles" : guild.role_count,
         "Created at" : guild.created_at.strftime("%b %d, %Y, %T"),
         "Description" : guild.description,
     }
@@ -130,33 +99,34 @@ async def Server(ctx):
     embed.set_footer(text=f"id: {guild.id}")
 
     embed.set_thumbnail(guild.icon)
-    await ctx.reply(embed=embed)
+    await interaction.send(embed=embed)
 
-##TEST CREATE VC
-@bot.command(name="createvoice")
-async def createvoice(ctx, name="Custom Voice", user_limit = int(5), bitrate = int(64)):
-    user = ctx.message.author
-    guild = ctx.message.author.guild
+## CREATE VC
+@bot.slash_command(name="createvoice", description="allows you to create a voice channel that will delete itself in 24hrs")
+async def createvoice(interaction: nextcord.Interaction, name="Custom Voice", user_limit = int(5)):
+
+    user = interaction.user
+    guild = interaction.guild
     category = get(guild.categories, name="Custom VCs")
-    channel = await guild.create_voice_channel(name=name, user_limit=user_limit, category = category, bitrate = bitrate * 1000)
-    embed = Embed(color=0x2F3136, description=f"{name} VC was made with the user limit being {user_limit} and bitrate of {bitrate} by <@{user.id}> ")
+    channel = await guild.create_voice_channel(name=name, user_limit=user_limit, category = category)
+    embed = Embed(color=0x2F3136, description=f"{name} VC was made with the user limit being {user_limit} by <@{user.id}> ")
     embed.set_author(name=f"{name} VC", url="https://cdn.discordapp.com/emojis/947101075981340713.webp?size=96&quality=lossless")
     embed.set_footer(text="Comlpleted successfully")
-    await ctx.send(embed=embed)
+    await interaction.send(embed=embed)
     time.sleep(86400)
     await channel.delete()
 
-##INVITE COMMAND!
-@bot.command("invite")
-async def invite(ctx):
-    await ctx.reply("Here is a link to my discord server! - https://discord.gg/vbNjVExh77")
+@bot.slash_command(name="disconnect", description="disconnects a user from your custom voicechat")
+async def disconnect(interaction: nextcord.Interaction, member: Member):
+    channel = interaction.user.voice.channel
+    interaction.channel.member.disconnect()
 
 ##GENERATOR 
 
-@bot.command(name="generate")
-async def generate(ctx: commands.context, *, prompt: str):
+@bot.slash_command(name="generate")
+async def generate(interaction: nextcord.Interaction, *, prompt: str):
     ETA = int(time.time() + 60)
-    msg = await ctx.send(f"Go grab a coffee, this may take a while :D... ETA: <t:{ETA}:R>")
+    msg = await interaction.send(f"Go grab a coffee, this may take a while :D... ETA: <t:{ETA}:R>")
     generator = Craiyon()
     endResult = generator.generate(prompt)
     images = endResult.images
@@ -165,102 +135,73 @@ async def generate(ctx: commands.context, *, prompt: str):
         image = BytesIO(base64.decodebytes(i.encode("utf-8")))
         return await msg.edit(content="Image Generated! Make sure to visit **https://www.craiyon.com/** if ur cool :>", file = nextcord.File(image, f"{prompt}.png"))
 
-
-## Hi COMMAND
-@bot.command(name="hi")
-async def hi(ctx):
-    await ctx.reply("Hello there! :D")
-
-##arkyhh
-Arkyhhs = ["Arkyhh :smirk:", "Arkyhh lookin' sus :face_with_open_eyes_and_hand_over_mouth:", "Arkyhh go stupid go crazy balalalala", "Feet pics from Arkyhh at https://www.gegudkiddo.com","proof that earth is flat compiled by Arkyhh: https://www.youtube.com/watch?v=fF6T7GWPygk","Cool PC tricks by Akryhh number one : delete folder named syst...","Arkyhh when he get's a good skin in his shop - :no_entry_sign: :money_with_wings:"]
-@bot.command(name="Arkyhh")
-@commands.cooldown(1, 30, commands.BucketType.user)
-async def Arkyhh(ctx):
-    await ctx.send(random.choice(Arkyhhs))
-
-@Arkyhh.error
-async def Arkyhh_error(ctx:commands.Context, error: commands.errors.CommandOnCooldown):
-    if isinstance(error, commands.errors.CommandOnCooldown):
-        await ctx.reply(f"You can only use this command once every 30 socends, Try again in {error.retry_after:.2f}s")
-        return
-
 ##playlist command
 
-@bot.command(name="connect")
-async def join(ctx):
-    channel = ctx.author.voice.channel
+@bot.slash_command(name="connect", description="Connects the bot to the VC")
+async def connect(interaction: nextcord.Interaction):
+    channel = interaction.user.voice.channel
     await channel.connect()
+    await interaction.send("Bot has joined the VC!")
 
-@bot.command(name="disconnect")
-async def leave(ctx):
-    await ctx.voice_bot.disconnect()
+@bot.slash_command(name="disconnect",description="disconnects the bot from the VC")
+async def leave(interaction: nextcord.Interaction):
+    channel = interaction.user.voice.channel
+    await interaction.disconnect()
 
 
-## Say command
+## Say commandimage.png
 
-@bot.command(name="say")
-async def say(ctx, *, message):
-    ## DELETE ORIGINAL MSG
-    await ctx.message.delete()
+@bot.slash_command(name="say", description="the bot says whatever you put in!")
+async def say(interaction: nextcord.Interaction, *, message):
     ## SEND ORIGINAL MSG
-    await ctx.send(f"{message}")
+    await interaction.send(f"{message}")
 
 ##ROLL COMMAND
-@bot.command(name='roll')
-async def roll(ctx, min='1', max='100'): 
+@bot.slash_command(name='roll', description="The bot rolls a dice between the numbers that you chose!")
+async def roll(interaction: nextcord.Interaction, min='1', max='100'): 
     RollLog = print(f"RollLog: Min {min} - Max {max}")
     print(RollLog)
-    await ctx.reply(random.randint(int(min), int(max)))
+    await interaction.send(random.randint(int(min), int(max)))
 
 ##GUESS COMMAND
-@bot.command(name="guess")
+@bot.slash_command(name="guess", description="Bot gets a number between 1 and 100 and you have to guess it")
 @commands.cooldown(1, 60, commands.BucketType.user)
-async def guess(ctx):
-    await ctx.reply("I thought of a number between **1 and 100, You got 5 guesses good luck!**")
+async def guess(interaction: nextcord.Interaction):
+    await interaction.send("I thought of a number between **1 and 100, You got 5 guesses good luck!**")
     guesses = 5
     num = random.randint(1, 100)
     GuessLog = print(f"GuessLog: {num}")
     while True:
-        msg = await bot.wait_for('message',check=lambda m:m.author == ctx.author and m.channel == ctx.channel and m.content.isdigit())
+        msg = await bot.wait_for('message',check=lambda m:m.author == interaction.author and m.channel == interaction.channel and m.content.isdigit())
         guesses-=1
         num_ = int(msg.content)
         if num!=num_:
-            await ctx.send(f"Incorrect! The number that I chose is {'**higher**' if num_<num else '**lower**'} you have *{guesses} guesses left*")
+            await interaction.send(f"Incorrect! The number that I chose is {'**higher**' if num_<num else '**lower**'} you have *{guesses} guesses left*")
         else:
-            await ctx.send(f"Correct! You guessed the number in **{5 - guesses} guesses!**")
+            await interaction.send(f"Correct! You guessed the number in **{5 - guesses} guesses!**")
             break
         if guesses == 0:
-            await ctx.send(f"Incorrect! The number that I chose was **{num}**, better luck next time")
+            await interaction.send(f"Incorrect! The number that I chose was **{num}**, better luck next time")
             break
 ## GUESS ERROR
 @guess.error
-async def Guess_error(ctx:commands.Context, error: commands.errors.CommandOnCooldown):
+async def Guess_error(interaction: nextcord.Interaction, error: commands.errors.CommandOnCooldown):
     if isinstance(error, commands.errors.CommandOnCooldown):
-        await ctx.reply(f"You can only use this command once every 60 socends, Try again in {error.retry_after:.2f}s")
+        await Interaction.send(f"You can only use this command once every 60 socends, Try again in {error.retry_after:.2f}s")
         return
 
-
-## HOW GAY
-
-@bot.command(name="howgay")
-async def howgay(ctx, member: nextcord.Member):
-    await ctx.reply(f"{member.mention} is {random.randint(1, 100)}% :rainbow:")
-
 ##SOCIALS COMMAND
-@bot.command(name="socials")
-async def socials(ctx):
-    Twitch = Button(label="Twitch", url="https://www.twitch.tv/0minutesval")
-    Youtube = Button(label="Youtube", url="https://www.youtube.com/channel/UC4IZby3-37G0sZO0ZSDmCKg")
-    FriendTwitch = Button(label="Friends Twitch", url="https://www.twitch.tv/tvkrano")
-    Discord = Button(label="My Discord Server!", url="https://discord.gg/vbNjVExh77")
+@bot.slash_command(name="socials")
+async def socials(interaction: nextcord.Interaction):
+    Twitch = Button(label="Twitch", url="https://www.twitch.tv/0minutesval", style = nextcord.ButtonStyle.blurple)
+    Youtube = Button(label="Youtube", url="https://www.youtube.com/channel/UC4IZby3-37G0sZO0ZSDmCKg",style = nextcord.ButtonStyle.red)
+    FriendTwitch = Button(label="Friends Twitch", url="https://www.twitch.tv/tvkrano",style = nextcord.ButtonStyle.blurple)
 
-    myview = View(timeout=240)
+    myview = View(timeout=60)
     myview.add_item(Twitch)
     myview.add_item(Youtube)
     myview.add_item(FriendTwitch)
-    myview.add_item(Discord)
-
-    await ctx.reply("Twitch And Youtube! Make sure to follow and give me a sub ;) + my friend's twitch!", view=myview)
+    await interaction.send("Twitch And Youtube! Make sure to follow and give me a sub ;) + my friend's twitch!", view=myview)
 
 ##WELCOME 
 
@@ -270,11 +211,37 @@ async def on_member_join(member):
     if guild.system_channel is not None:
         message = f"Welcome {member.mention} to {guild.name}. Make sure you check you #rules , bot prefix is '.' hopefully you will enjoy it here!"
         await guild.system_channel.send(message)
-    role = nextcord.utils.get(message.guild.roles, name = "Squad")
-    await bot.add_role(member, role)
-
 
 #### ------------------------------------------------------------------------------!!!MODERATION!!!-------------------------------------------------- ###
+
+
+##VERIFICATION CHAT
+@bot.slash_command(name="verification", description="verifies you!")
+async def verification(interaction: nextcord.Interaction):
+
+    user = interaction.user
+    role = 1043889426008383502
+    has_role = nextcord.utils.find(lambda r: r.name == 'Verified', interaction.guild.roles)
+    datetime_object = datetime.now()
+
+    ##
+    if has_role in user.roles:
+        ##FAIL EMBED
+        embed = Embed(color=0xdb1414, description=f"{user.mention} you are already verified!")
+        embed.set_author(name="Failure!")
+        await interaction.send(embed=embed)
+
+    else:
+        ##SUCCESS EMBED
+        embed = Embed(color=0x19942a, description=f"{user.mention}, you've been successfully verified at {datetime_object}! We hope you enjoy!")
+        embed.set_author(name="Success!")
+
+        await interaction.send(embed=embed)
+        time.sleep(1.5)
+        await user.add_roles(user.guild.get_role(role))
+
+        
+
 class verify(nextcord.ui.View):
     def __init__(self):
         super().__init__(timeout = None)
@@ -282,30 +249,42 @@ class verify(nextcord.ui.View):
     
     @nextcord.ui.button(label="Verify", style=nextcord.ButtonStyle.success)
     async def demo1(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        role = 1043845192266031105
+        role = 1043889426008383502
         user = interaction.user
-        await user.add_roles(user.guild.get_role(role))
-        await interaction.response.send_message("Successfully verified!", ephemeral=True)
-    
+        has_role =  nextcord.utils.find(lambda r: r.name == 'Verified', interaction.guild.roles)
+
+        if has_role in user.roles:
+            ##FAIL EMBED
+            embed = Embed(color=0xdb1414, description=f"{user.mention} you are already verified!")
+            embed.set_author(name="Failure!")
+            await interaction.send(embed=embed, ephemeral=True)
+        else:
+            await user.add_roles(user.guild.get_role(role))
+            ##SUCCESS EMBED
+            datetime_object = datetime.now()
+            embed = Embed(color=0x19942a, description=f"{user.mention}, you've been successfully verified at {datetime_object}! We hope you enjoy!")
+            embed.set_author(name="Success!")
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+
 ##VERIFY
 @commands.guild_only()
 @commands.has_permissions(manage_messages = True)
 @commands.bot_has_permissions(manage_messages = True)
-@bot.command(name="verify")
-async def Verify(ctx):
-    embed = Embed(color=0x2F3136, description="""Make sure you read the server <#1028421022204051556>. For any help message the owner <@692430762896523406> \n
-    For bot help do .help and make sure to have fun!\n
+@bot.slash_command(name="verify", description="embed verification command")
+async def Verify(interaction: nextcord.Interaction):
+    embed = Embed(color=0x2F3136, description="""Make sure you read the server <#1043886583838933014>. For any help message the owner <@692430762896523406> \n
+    For bot help do .help and make sure to have fun! Incase you get an error saying "Interaction failed" run the command ".verification" in <#1043916857117249536>
     To Verify Click the button below :arrow_down:\n""")
     embed.set_author(name="SquadBot Verify", url="https://cdn.discordapp.com/emojis/947101075981340713.webp?size=96&quality=lossless")
     embed.set_footer(text=f"• Made By 0minutes")
-    await ctx.send(embed=embed, view = verify())
+    await interaction.channel.send(embed=embed, view = verify())
 
 ##RULES
 @commands.guild_only()
 @commands.has_permissions(manage_messages = True)
 @commands.bot_has_permissions(manage_messages = True)
-@bot.command(name="rules")
-async def rules(ctx):
+@bot.slash_command(name="rules", description="The bot displays the default rules")
+async def rules(interaction: nextcord.Interaction):
     embed = Embed(color=0x2F3136, description="""**・1. Be respectful**\n You must respect all users, regardless of your liking towards them. Treat others the way you want to be treated.\n
     **・2. No Inappropriate Language**\n The messages with innapropriate words will be automatically removed. However, any derogatory language towards any user is prohibited.\n
     **・3. No spamming**\n Don't send a lot of small messages right after each other. Do not disrupt chat by spamming.\n
@@ -317,7 +296,7 @@ async def rules(ctx):
     **・9. Follow the Discord Community Guidelines And TOS**\n You can find them here:\n https://discordapp.com/guidelines\n  https://discord.com/TOS\n \n""")
     embed.set_author(name="SquadBot Server rules", url="https://cdn.discordapp.com/emojis/947101075981340713.webp?size=96&quality=lossless")
     embed.set_footer(text="• Rules By 0minutes#0201")
-    await ctx.send(embed=embed)
+    await interaction.channel.send(embed=embed)
 ##WORD FILTER
 
 bad_words = ["bad_test","cunt","fk u","fuck","fuck u","fuck you","dick head","nigger","nga","nigga","paki","dumbass","gay sex","jerk off","KKK","retard","wanker","boobs","titties","tits","tit","https://www.pornhub.com","pornhub","porn","pedophile"]
@@ -336,72 +315,128 @@ async def on_message(message):
     await bot.process_commands(message)
 
 ##.CLEAR COMMAND
-@commands.guild_only()
-@commands.has_permissions(manage_messages = True)
-@commands.bot_has_permissions(manage_messages = True)
-@bot.command(name="clear")
-async def clear(ctx, amount=5):    
-    await ctx.channel.purge(limit=amount+1)
+@bot.slash_command(description="clears given amount of messages.")
+async def clear(interaction: nextcord.Interaction, amount: int = SlashOption(description="The amount of messages you want to clear.")):
+    await interaction.channel.purge(limit=amount)
+    pe = nextcord.Embed(description=f"Sucessfully purged {amount} messages!", color=0x2F3136, timestamp=datetime.now())
+    pe.set_author(name="CLEAR SUCCESSFULL!")
+    pe.set_footer(text=f"Executed by {interaction.user}")
+    await interaction.send(embed=pe, delete_after=3)
 
-##UNBAN
+##TICKET 
+
+#CLOSE TICKET BUTTON CLASS + FUNCTION
+
+class CloseTicket(nextcord.ui.View):
+    def __init__(self):
+        super().__init__(timeout = None)
+        self.value = None
+
+        
+    @nextcord.ui.button(label="Close Ticket", style=nextcord.ButtonStyle.red)
+    async def CloseTicket(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        channel = interaction.channel
+        await interaction.send("Ticket is closed...", ephemeral=True)
+        time.sleep(1.1)
+        await channel.delete()
+
+        
+
+#CREATE TICKET BUTTON CLASS + FUNCTION
+class CreateTicket(nextcord.ui.View):
+    def __init__(self):
+        super().__init__(timeout = None)
+        self.value = None
+        
+    
+    @nextcord.ui.button(label="Create Ticket", style=nextcord.ButtonStyle.success)
+    async def CreateTicket(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+
+        ##MAIN FUNCTION WHICH CREATES CHANNEL + GIVES OUT THE PERMS
+
+        user = interaction.user
+        guild = user.guild
+        default_role = user.guild.get_role(1043889426008383502)
+        overwrites = {
+            interaction.guild.default_role: nextcord.PermissionOverwrite(view_channel=False),
+            user: nextcord.PermissionOverwrite(view_channel = True)
+        }
+        category = get(guild.categories, name="Tickets")
+        await interaction.send("Ticket is being created...", ephemeral=True)
+    ## WHEN THE USER PRESSES 
+        
+        channel = await guild.create_text_channel(name=f"ticket-{random.randint(1000, 9999)}", category = category, overwrites=overwrites) ##Makes a ticket channel in the the Tickets category + assigns a name
+
+    ## SENDS THE CLOSE TICKET EMBED WHEN IN THE NEWLY CREATED CHANNEL
+        
+        CloseEmbed = Embed(color=0x2F3136, description="""So we can give you the best service please make sure you:!\n
+    • Explained your question/problem in as much detail
+    • Provide us with screenshots of the problem or accident (if any)
+    • Be friendly to our staff members as they'll do their best to help you.\n
+    To Close the ticket Click the button below :arrow_down:\n""")
+        CloseEmbed.set_author(name="SquadBot Close Ticket",)
+        CloseEmbed.set_footer(text=f"• Made By 0minutes")
+        await channel.send(embed=CloseEmbed, view=CloseTicket())
+        
+
+        
+
+
+@bot.slash_command(name="createticket", description="Creates a ticket embed + button!")
+async def Createticket(interaction: nextcord.Interaction):
+    embed = Embed(color=0x2F3136, description="""If you have the smallest question or problem please be sure to share them here! We'll do everything in our power to help answer/solve your problem!\n
+    To Create the ticket Click the button below :arrow_down:\n""")
+    embed.set_author(name="SquadBot Create Ticket",)
+    embed.set_footer(text=f"• Made By 0minutes")
+    await interaction.channel.send(embed=embed, view=CreateTicket())
+
 
 ##BAN COMMAND
-@bot.command(name="ban")
+@bot.slash_command(name="ban", description="Ban a memeber from the discord server")
 @commands.guild_only()
 @commands.has_permissions(ban_members = True)
 @commands.bot_has_permissions(ban_members = True)
-async def ban(ctx:commands.Context, member: Member, *, reason:str=None):
+async def ban(interaction: nextcord.Interaction, member: Member, *, reason:str=None):
     if reason == None:
         reason = "No reason provided"
 
     await member.ban(delete_message_days=0, reason=reason)
-    await ctx.reply(f"**{member.name} is banned for {reason}**")
+    await interaction.send(f"**{member.name} is banned for {reason}**")
 
 ##KICK COMMAND
-@bot.command(name="kick")
+@bot.slash_command(name="kick", description=("Kick a member from the server"))
 @commands.guild_only()
 @commands.has_permissions(kick_members = True)
 @commands.bot_has_permissions(kick_members = True)
-async def kick(ctx, member : nextcord.Member, *, reason=None):
+async def kick(interaction: nextcord.Interaction, member : nextcord.Member, *, reason=None):
     if reason == None:
         reason = "No reason provided"
     
     await member.kick(reason=reason)
-    await ctx.reply(f"**{member.name} is kicked for {reason}**")
+    await interaction.send(f"**{member.name} is kicked for {reason}**")
 
 ### !!!ERROR HANDLER!!! ###
 
 ##KICK ERROR
 @kick.error
-async def kick_error(ctx:commands.Context, error: commands.CommandError):
+async def kick_error(interaction: nextcord.Interaction, error: commands.CommandError):
     if isinstance(error, commands.MissingPermissions):
-        await ctx.reply(f"you do not have the kick members premissions")
+        await interaction.semnd(f"you do not have the kick members premissions")
         return
     
     elif isinstance(error, commands.BotMissingPermissions):
-        await ctx.reply(f"I dont have premissions to do that!")
+        await interaction.send(f"I dont have premissions to do that!")
         return
 
 #BAN ERROR
 @ban.error
-async def ban_error(ctx:commands.Context, error: commands.CommandError):
+async def ban_error(interaction: nextcord.Interaction, error: commands.CommandError):
     if isinstance(error, commands.MissingPermissions):
-        await ctx.reply(f"you do not have the ban members premissions")
+        await interaction.send(f"you do not have the ban members premissions")
         return
     
     elif isinstance(error, commands.BotMissingPermissions):
-        await ctx.reply(f"I dont have premissions to do that!")
-        return
-
-##CLEAR ERROR
-@clear.error
-async def clear_error(ctx:commands.Context, error: commands.CommandError):
-    if isinstance(error, commands.MissingPermissions):
-        await ctx.reply(f"you do not have the manage messages premissions!")
-        return
-    
-    elif isinstance(error, commands.BotMissingPermissions):
-        await ctx.reply(f"I dont have premissions to do that!")
+        await interaction.send(f"I dont have premissions to do that!")
         return
 
 bot.run(config["token"])
