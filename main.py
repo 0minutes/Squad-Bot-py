@@ -268,9 +268,11 @@ class verify(nextcord.ui.View):
 
 ##VERIFY
 @commands.guild_only()
-@commands.has_permissions(manage_messages = True)
+@commands.has_permissions(kick_members=True)
 @bot.slash_command(name="verify", description="embed verification command")
 async def Verify(interaction: nextcord.Interaction):
+    if nextcord.permissions(kick_members=False):
+        return
     embed = Embed(color=0x2F3136, description="""Make sure you read the server <#1043886583838933014>. For any help message the owner <@692430762896523406> \n
     For bot help do .help and make sure to have fun! Incase you get an error saying "Interaction failed" run the command ".verification" in <#1043916857117249536>
     To Verify Click the button below :arrow_down:\n""")
@@ -280,10 +282,11 @@ async def Verify(interaction: nextcord.Interaction):
 
 ##RULES
 @commands.guild_only()
-@commands.has_permissions(manage_messages = True)
-@commands.bot_has_permissions(manage_messages = True)
+@commands.has_permissions(kick_members=True)
 @bot.slash_command(name="rules", description="The bot displays the default rules")
 async def rules(interaction: nextcord.Interaction):
+    if nextcord.permissions(kick_members=False):
+        return
     embed = Embed(color=0x2F3136, description="""**・1. Be respectful**\n You must respect all users, regardless of your liking towards them. Treat others the way you want to be treated.\n
     **・2. No Inappropriate Language**\n The messages with innapropriate words will be automatically removed. However, any derogatory language towards any user is prohibited.\n
     **・3. No spamming**\n Don't send a lot of small messages right after each other. Do not disrupt chat by spamming.\n
@@ -316,6 +319,8 @@ async def on_message(message):
 ##.CLEAR COMMAND
 @bot.slash_command(description="clears given amount of messages.")
 async def clear(interaction: nextcord.Interaction, amount: int = SlashOption(description="The amount of messages you want to clear.")):
+    if nextcord.permissions(manage_messages=False):
+        return
     await interaction.channel.purge(limit=amount)
     pe = nextcord.Embed(description=f"Sucessfully purged {amount} messages!", color=0x2F3136, timestamp=datetime.now())
     pe.set_author(name="CLEAR SUCCESSFULL!")
@@ -380,10 +385,11 @@ class CreateTicket(nextcord.ui.View):
 
         
 
-
+@commands.has_permissions(kick_members=True)
 @bot.slash_command(name="createticket", description="Creates a ticket embed + button!")
-@commands.has_permissions(administrator=True)
 async def Createticket(interaction: nextcord.Interaction):
+    if nextcord.permissions(kick_members=False):
+        return
     embed = Embed(color=0x2F3136, description="""If you have the smallest question or problem please be sure to share them here! We'll do everything in our power to help answer/solve your problem!\n
     To Create the ticket Click the button below :arrow_down:\n""")
     embed.set_author(name="SquadBot Create Ticket",)
@@ -409,6 +415,9 @@ async def ban(interaction: nextcord.Interaction, member: Member, *, reason:str=N
 @commands.has_permissions(kick_members = True)
 @commands.bot_has_permissions(kick_members = True)
 async def kick(interaction: nextcord.Interaction, member : nextcord.Member, *, reason=None):
+    if nextcord.permissions(kick_members=False):
+        return
+    
     if reason == None:
         reason = "No reason provided"
     
