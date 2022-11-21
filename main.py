@@ -269,7 +269,6 @@ class verify(nextcord.ui.View):
 ##VERIFY
 @commands.guild_only()
 @commands.has_permissions(manage_messages = True)
-@commands.bot_has_permissions(manage_messages = True)
 @bot.slash_command(name="verify", description="embed verification command")
 async def Verify(interaction: nextcord.Interaction):
     embed = Embed(color=0x2F3136, description="""Make sure you read the server <#1043886583838933014>. For any help message the owner <@692430762896523406> \n
@@ -383,6 +382,7 @@ class CreateTicket(nextcord.ui.View):
 
 
 @bot.slash_command(name="createticket", description="Creates a ticket embed + button!")
+@commands.has_permissions(administrator=True)
 async def Createticket(interaction: nextcord.Interaction):
     embed = Embed(color=0x2F3136, description="""If you have the smallest question or problem please be sure to share them here! We'll do everything in our power to help answer/solve your problem!\n
     To Create the ticket Click the button below :arrow_down:\n""")
