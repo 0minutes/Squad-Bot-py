@@ -271,8 +271,6 @@ class verify(nextcord.ui.View):
 @commands.has_permissions(kick_members=True)
 @bot.slash_command(name="verify", description="embed verification command")
 async def Verify(interaction: nextcord.Interaction):
-    if nextcord.permissions(kick_members=False):
-        return
     embed = Embed(color=0x2F3136, description="""Make sure you read the server <#1043886583838933014>. For any help message the owner <@692430762896523406> \n
     For bot help do .help and make sure to have fun! Incase you get an error saying "Interaction failed" run the command ".verification" in <#1043916857117249536>
     To Verify Click the button below :arrow_down:\n""")
