@@ -209,7 +209,7 @@ async def socials(interaction: nextcord.Interaction):
 async def on_member_join(member):
     guild = member.guild
     if guild.system_channel is not None:
-        message = f"Welcome {member.mention} to {guild.name}. Make sure you check you #rules , bot prefix is '.' hopefully you will enjoy it here!"
+        message = f"Welcome {member.mention} to {guild.name}. Make sure you check you <#1043886583838933014> , bot prefix is '.' hopefully you will enjoy it here!"
         await guild.system_channel.send(message)
 
 #### ------------------------------------------------------------------------------!!!MODERATION!!!-------------------------------------------------- ###
@@ -281,12 +281,11 @@ async def Verify(interaction: nextcord.Interaction):
     await interaction.channel.send(embed=embed, view = verify())
 
 ##RULES
-@commands.guild_only()
-@commands.has_permissions(kick_members=True)
+
 @bot.slash_command(name="rules", description="The bot displays the default rules")
+@application_checks.guild_only()
+@application_checks.has_permissions(kick_members=True)
 async def rules(interaction: nextcord.Interaction):
-    if nextcord.permissions(kick_members=False):
-        return
     embed = Embed(color=0x2F3136, description="""**・1. Be respectful**\n You must respect all users, regardless of your liking towards them. Treat others the way you want to be treated.\n
     **・2. No Inappropriate Language**\n The messages with innapropriate words will be automatically removed. However, any derogatory language towards any user is prohibited.\n
     **・3. No spamming**\n Don't send a lot of small messages right after each other. Do not disrupt chat by spamming.\n
@@ -318,9 +317,8 @@ async def on_message(message):
 
 ##.CLEAR COMMAND
 @bot.slash_command(description="clears given amount of messages.")
+@application_checks.has_permissions(kick_members=True)
 async def clear(interaction: nextcord.Interaction, amount: int = SlashOption(description="The amount of messages you want to clear.")):
-    if nextcord.permissions(manage_messages=False):
-        return
     await interaction.channel.purge(limit=amount)
     pe = nextcord.Embed(description=f"Sucessfully purged {amount} messages!", color=0x2F3136, timestamp=datetime.now())
     pe.set_author(name="CLEAR SUCCESSFULL!")
@@ -385,11 +383,10 @@ class CreateTicket(nextcord.ui.View):
 
         
 
-@commands.has_permissions(kick_members=True)
+
 @bot.slash_command(name="createticket", description="Creates a ticket embed + button!")
+@application_checks.has_permissions(kick_members=True)
 async def Createticket(interaction: nextcord.Interaction):
-    if nextcord.permissions(kick_members=False):
-        return
     embed = Embed(color=0x2F3136, description="""If you have the smallest question or problem please be sure to share them here! We'll do everything in our power to help answer/solve your problem!\n
     To Create the ticket Click the button below :arrow_down:\n""")
     embed.set_author(name="SquadBot Create Ticket",)
@@ -399,9 +396,9 @@ async def Createticket(interaction: nextcord.Interaction):
 
 ##BAN COMMAND
 @bot.slash_command(name="ban", description="Ban a memeber from the discord server")
-@commands.guild_only()
-@commands.has_permissions(ban_members = True)
-@commands.bot_has_permissions(ban_members = True)
+@application_checks.guild_only()
+@application_checks.has_permissions(ban_members = True)
+@application_checks.bot_has_permissions(ban_members = True)
 async def ban(interaction: nextcord.Interaction, member: Member, *, reason:str=None):
     if reason == None:
         reason = "No reason provided"
@@ -411,9 +408,9 @@ async def ban(interaction: nextcord.Interaction, member: Member, *, reason:str=N
 
 ##KICK COMMAND
 @bot.slash_command(name="kick", description=("Kick a member from the server"))
-@commands.guild_only()
-@commands.has_permissions(kick_members = True)
-@commands.bot_has_permissions(kick_members = True)
+@application_checks.guild_only()
+@application_checks.has_permissions(kick_members = True)
+@application_checks.bot_has_permissions(kick_members = True)
 async def kick(interaction: nextcord.Interaction, member : nextcord.Member, *, reason=None):
     if nextcord.permissions(kick_members=False):
         return
