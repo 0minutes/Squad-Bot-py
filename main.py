@@ -410,8 +410,6 @@ async def ban(interaction: nextcord.Interaction, member: Member, *, reason:str=N
 @application_checks.has_permissions(kick_members = True)
 @application_checks.bot_has_permissions(kick_members = True)
 async def kick(interaction: nextcord.Interaction, member : nextcord.Member, *, reason=None):
-    if nextcord.permissions(kick_members=False):
-        return
     
     if reason == None:
         reason = "No reason provided"
